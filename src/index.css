@@ -1,0 +1,366 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #14141a;
+    background-color: #fdfbf6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+}
+
+@layer components {
+  .arch-frame {
+    border-radius: 120px 120px 16px 16px;
+    overflow: hidden;
+  }
+
+  .arch-frame-top {
+    border-radius: 120px 120px 0 0;
+    overflow: hidden;
+  }
+
+  /* 3D scene — perspective on parent, transform on child */
+  .scene-3d {
+    perspective: 1400px;
+    transform-style: preserve-3d;
+  }
+
+  .tilt-scene {
+    perspective: 1400px;
+    transform-style: preserve-3d;
+  }
+
+  .tilt-scene.h-full {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tilt-inner.h-full {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tilt-inner {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .tilt-glow:hover .tilt-inner {
+    box-shadow:
+      0 0 0 1px rgba(212, 175, 55, 0.15),
+      0 28px 56px -16px rgba(13, 23, 48, 0.45),
+      0 0 40px -8px rgba(212, 175, 55, 0.12);
+  }
+
+  /* VAYRON-inspired section backgrounds */
+  .premium-dark-section {
+    background: linear-gradient(165deg, #0d1730 0%, #121f38 45%, #0d1730 100%);
+    color: #fdfbf6;
+  }
+
+  .premium-light-section {
+    background: linear-gradient(180deg, #fdfbf6 0%, #f7f1e3 100%);
+  }
+
+  .mesh-gradient {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(212, 175, 55, 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(58, 78, 107, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(127, 161, 132, 0.05) 0%, transparent 60%);
+  }
+
+  /* Premium cards */
+  .premium-card-dark {
+    border-radius: 1.5rem;
+    border: 1px solid rgba(253, 251, 246, 0.08);
+    background: rgba(13, 23, 48, 0.4);
+    box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+
+  .premium-card-light {
+    border-radius: 1.25rem;
+    border: 1px solid rgba(234, 217, 168, 0.25);
+    background: rgba(253, 251, 246, 0.85);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 16px 40px -12px rgba(13, 23, 48, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-card {
+    border: 1px solid rgba(253, 251, 246, 0.1);
+    background: rgba(253, 251, 246, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-card-light {
+    border: 1px solid rgba(234, 217, 168, 0.3);
+    background: rgba(253, 251, 246, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px -8px rgba(13, 23, 48, 0.08);
+  }
+
+  .premium-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    background: rgba(212, 175, 55, 0.1);
+    padding: 0.375rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #d4af37;
+  }
+
+  .premium-badge-dark {
+    border-color: rgba(212, 175, 55, 0.25);
+    background: rgba(212, 175, 55, 0.08);
+    color: #ead9a8;
+  }
+
+  .vayron-section {
+    @apply py-20 lg:py-28;
+  }
+
+  /* Sacred Destinations bento grid */
+  .sacred-bento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .sacred-bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .sacred-bento-grid {
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(2, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .sacred-bento-feature {
+      grid-column: span 7;
+      grid-row: span 2;
+    }
+
+    .sacred-bento-item:nth-child(2) {
+      grid-column: span 5;
+    }
+
+    .sacred-bento-item:nth-child(3) {
+      grid-column: span 5;
+    }
+
+    .sacred-bento-item:nth-child(4) {
+      grid-column: span 7;
+    }
+  }
+
+  .sacred-card {
+    border-radius: 1.5rem;
+    border: 1px solid rgba(253, 251, 246, 0.1);
+    background: #0d1730;
+    box-shadow:
+      0 0 0 1px rgba(212, 175, 55, 0.04) inset,
+      0 24px 48px -20px rgba(0, 0, 0, 0.55);
+    min-height: 320px;
+    transition:
+      border-color 0.4s ease,
+      box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sacred-card-feature {
+    min-height: 420px;
+  }
+
+  @media (min-width: 1024px) {
+    .sacred-card-feature {
+      min-height: 100%;
+      height: 100%;
+    }
+
+    .sacred-card-standard {
+      min-height: 300px;
+      height: 100%;
+    }
+  }
+
+  .sacred-card:hover {
+    border-color: rgba(212, 175, 55, 0.28);
+    box-shadow:
+      0 0 0 1px rgba(212, 175, 55, 0.12) inset,
+      0 32px 64px -24px rgba(0, 0, 0, 0.65),
+      0 0 48px -12px rgba(212, 175, 55, 0.1);
+  }
+
+  .card-shine {
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(253, 251, 246, 0.06) 45%,
+      rgba(253, 251, 246, 0.12) 50%,
+      rgba(253, 251, 246, 0.06) 55%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    animation: none;
+  }
+
+  .sacred-card:hover .card-shine {
+    animation: card-shine 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes card-shine {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* About section photo stack */
+  .about-photo-stack {
+    padding-bottom: 2.5rem;
+  }
+
+  .about-photo-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(234, 217, 168, 0.35);
+    background: #0d1730;
+    box-shadow: 0 20px 48px -16px rgba(13, 23, 48, 0.28);
+    margin: 0;
+  }
+
+  .about-photo-main {
+    width: 100%;
+    border-radius: 1.75rem 1.75rem 1.25rem 1.25rem;
+  }
+
+  .about-photo-accent {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: min(52%, 240px);
+    border: 4px solid #fdfbf6;
+    border-radius: 1.25rem;
+    box-shadow: 0 16px 40px -12px rgba(13, 23, 48, 0.35);
+    z-index: 10;
+  }
+
+  @media (min-width: 640px) {
+    .about-photo-accent {
+      width: min(46%, 280px);
+      right: 0.5rem;
+      bottom: -0.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-photo-stack {
+      padding-bottom: 3rem;
+    }
+
+    .about-photo-accent {
+      width: 42%;
+      right: 1rem;
+      bottom: -1rem;
+    }
+  }
+
+  .about-photo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .about-photo-main .about-photo-img {
+    aspect-ratio: 5 / 4;
+    min-height: 280px;
+  }
+
+  @media (min-width: 640px) {
+    .about-photo-main .about-photo-img {
+      min-height: 360px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-photo-main .about-photo-img {
+      min-height: 420px;
+      aspect-ratio: 6 / 5;
+    }
+  }
+
+  .about-photo-accent .about-photo-img {
+    aspect-ratio: 3 / 4;
+    min-height: 200px;
+  }
+
+  .about-photo-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 1.1rem;
+    background: linear-gradient(to top, rgba(13, 23, 48, 0.92) 0%, rgba(13, 23, 48, 0.55) 55%, transparent 100%);
+  }
+}
+
+@layer utilities {
+  .ease-vayron {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .group-hover\:scale-108:is(:where(.group):hover *) {
+    transform: scale(1.08);
+  }
+}
