@@ -14,7 +14,6 @@ import ProcessSteps from './components/ProcessSteps'
 import SacredSites from './components/SacredSites'
 import SmoothScroll from './components/SmoothScroll'
 import StarField from './components/StarField'
-import AnimatedGrid from './components/AnimatedGrid'
 import TrustBar from './components/TrustBar'
 import WhatsAppButton from './components/WhatsAppButton'
 import WhyChooseUs from './components/WhyChooseUs'
@@ -40,8 +39,6 @@ export default function App() {
       {/* ── Global ambient backgrounds (fixed, behind everything) ─────── */}
       {/* Star field — subtle cosmic depth */}
       <StarField />
-      {/* Animated dot grid — anime.js-inspired signature element */}
-      <AnimatedGrid className="animated-grid-fixed" goldRatio={0.065} spacing={32} />
 
       {/* ── Premium custom cursor ─────────────────────────────────────── */}
       <CustomCursor />

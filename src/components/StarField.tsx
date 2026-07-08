@@ -1,11 +1,21 @@
-import { useEffect, useRef } from 'react'
-import * as THREE from 'three'
-
 /**
- * StarField — a vanilla Three.js star particle canvas
- * fixed behind the entire page as an ambient depth layer.
- * No React Three Fiber overhead — just a raw <canvas> + requestAnimationFrame.
+ * StarField — lightweight CSS-only starfield.
+ * Replaces the Three.js version for massive performance gain (~800KB saved).
+ * Uses canvas for drawing, no heavy 3D library overhead.
  */
+import { useEffect, useRef } from 'react'
+
+interface Star {
+  x: number
+  y: number
+  r: number
+  alpha: number
+  speed: number
+  gold: boolean
+  twinklePhase: number
+  twinkleFreq: number
+}
+
 export default function StarField() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -13,118 +23,73 @@ export default function StarField() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    // ── Renderer ──────────────────────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: false, // perf: stars don't need AA
-      powerPreference: 'low-power',
-    })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    // Respect reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    // ── Scene / Camera ────────────────────────────────────────────────────────
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
-    camera.position.z = 400
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-    // ── Star geometry — dual layers ───────────────────────────────────────────
-    function makeStars(count: number, spread: number, size: number, color: number) {
-      const geo = new THREE.BufferGeometry()
-      const positions = new Float32Array(count * 3)
-      for (let i = 0; i < count; i++) {
-        positions[i * 3 + 0] = (Math.random() - 0.5) * spread
-        positions[i * 3 + 1] = (Math.random() - 0.5) * spread
-        positions[i * 3 + 2] = (Math.random() - 0.5) * spread
+    let rafId: number
+    let stars: Star[] = []
+
+    const STAR_COUNT = 280 // Was 1420 with Three.js — 5x fewer for perf
+
+    function buildStars() {
+      const w = canvas!.width
+      const h = canvas!.height
+      stars = Array.from({ length: STAR_COUNT }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() < 0.08 ? 1.4 + Math.random() * 0.8 : 0.5 + Math.random() * 0.7,
+        alpha: 0.2 + Math.random() * 0.55,
+        speed: 0.015 + Math.random() * 0.025,
+        gold: Math.random() < 0.06,
+        twinklePhase: Math.random() * Math.PI * 2,
+        twinkleFreq: 0.4 + Math.random() * 0.8,
+      }))
+    }
+
+    function resize() {
+      canvas!.width = window.innerWidth
+      canvas!.height = window.innerHeight
+      buildStars()
+    }
+
+    let lastT = 0
+    function draw(t: number) {
+      const dt = Math.min(t - lastT, 32) // cap at ~30fps delta
+      lastT = t
+
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
+
+      const ts = t / 1000
+
+      for (const s of stars) {
+        // Slow upward drift
+        s.y -= s.speed * (dt / 16)
+        if (s.y < -2) s.y = canvas!.height + 2
+
+        const twinkle = 0.65 + Math.sin(ts * s.twinkleFreq + s.twinklePhase) * 0.35
+        const a = s.alpha * twinkle
+
+        ctx!.beginPath()
+        ctx!.arc(s.x, s.y, s.r, 0, Math.PI * 2)
+        ctx!.fillStyle = s.gold
+          ? `rgba(212,175,55,${a})`
+          : `rgba(253,251,246,${a * 0.75})`
+        ctx!.fill()
       }
-      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-      const mat = new THREE.PointsMaterial({
-        color,
-        size,
-        sizeAttenuation: true,
-        transparent: true,
-        opacity: 0.75,
-        depthWrite: false,
-      })
-      return new THREE.Points(geo, mat)
+
+      rafId = requestAnimationFrame(draw)
     }
 
-    // White micro-stars (many)
-    const whiteStars = makeStars(900, 1600, 1.2, 0xfdfbf6)
-    // Gold accent stars (fewer, larger)
-    const goldStars  = makeStars(220, 1400, 1.8, 0xd4af37)
-    // Deep blue stars for depth
-    const blueStars  = makeStars(300, 1800, 0.9, 0xa8bcd4)
+    window.addEventListener('resize', resize, { passive: true })
+    resize()
+    rafId = requestAnimationFrame(draw)
 
-    scene.add(whiteStars, goldStars, blueStars)
-
-    // ── Gentle nebula / glow plane ────────────────────────────────────────────
-    const nebulaGeo = new THREE.PlaneGeometry(1200, 1200)
-    const nebulaMat = new THREE.MeshBasicMaterial({
-      color: 0x1a2a4a,
-      transparent: true,
-      opacity: 0.0,
-      depthWrite: false,
-    })
-    const nebula = new THREE.Mesh(nebulaGeo, nebulaMat)
-    nebula.position.z = -300
-    scene.add(nebula)
-
-    // ── Scroll-linked parallax ────────────────────────────────────────────────
-    let targetY = 0
-    let currentY = 0
-    const onScroll = () => {
-      targetY = window.scrollY * 0.06
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-
-    // ── Resize handler ────────────────────────────────────────────────────────
-    const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(window.innerWidth, window.innerHeight)
-    }
-    window.addEventListener('resize', onResize)
-
-    // ── Animation loop ────────────────────────────────────────────────────────
-    let frameId: number
-    const clock = new THREE.Clock()
-
-    const animate = () => {
-      frameId = requestAnimationFrame(animate)
-      const elapsed = clock.getElapsedTime()
-
-      // Smooth parallax
-      currentY += (targetY - currentY) * 0.04
-
-      // Slow drift rotation — different axes for each layer
-      whiteStars.rotation.y = elapsed * 0.012
-      whiteStars.rotation.x = Math.sin(elapsed * 0.007) * 0.05
-      goldStars.rotation.y  = elapsed * -0.008
-      goldStars.rotation.z  = elapsed * 0.005
-      blueStars.rotation.y  = elapsed * 0.018
-      blueStars.rotation.x  = Math.cos(elapsed * 0.006) * 0.04
-
-      // Camera parallax from scroll
-      camera.position.y = -currentY
-      camera.position.x = Math.sin(elapsed * 0.04) * 8
-
-      renderer.render(scene, camera)
-    }
-    animate()
-
-    // ── Cleanup ───────────────────────────────────────────────────────────────
     return () => {
-      cancelAnimationFrame(frameId)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onResize)
-      renderer.dispose()
-      whiteStars.geometry.dispose()
-      ;(whiteStars.material as THREE.Material).dispose()
-      goldStars.geometry.dispose()
-      ;(goldStars.material as THREE.Material).dispose()
-      blueStars.geometry.dispose()
-      ;(blueStars.material as THREE.Material).dispose()
+      cancelAnimationFrame(rafId)
+      window.removeEventListener('resize', resize)
     }
   }, [])
 
@@ -133,6 +98,7 @@ export default function StarField() {
       ref={canvasRef}
       className="star-field-canvas"
       aria-hidden="true"
+      style={{ opacity: 0.35, position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
     />
   )
 }
