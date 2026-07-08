@@ -1168,3 +1168,843 @@ html.lenis, html.lenis body {
 }
 
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ─── 3D PREMIUM EXTENSION ────────────────────────────────────────────────────
+   Loading Screen, StarField canvas, KaabaScene wrapper, font upgrades
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Cinzel heading font upgrade ──────────────────────────────────────────── */
+.font-heading {
+  font-family: 'Cinzel', 'Fraunces', Georgia, serif;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* ── Loading screen keyframes ─────────────────────────────────────────────── */
+@keyframes loader-orbital-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes loader-halo-pulse {
+  0%, 100% {
+    opacity: 0.12;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.22;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes loader-kaaba-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes loader-progress-shimmer {
+  from { opacity: 0.4; transform: translateX(-100%); }
+  to   { opacity: 0.9; transform: translateX(400%); }
+}
+
+@keyframes loader-grid-drift {
+  from { background-position: 0% 0%; }
+  to   { background-position: 100% 100%; }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Loading Screen root ──────────────────────────────────────────────────── */
+.loader-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #050810;
+}
+
+/* Radial glow background */
+.loader-bg-radial {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 45%, rgba(212,175,55,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(58,78,107,0.14) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 80% 20%, rgba(88,122,93,0.08) 0%, transparent 50%),
+    linear-gradient(168deg, #060a18 0%, #050810 50%, #080f1e 100%);
+  pointer-events: none;
+}
+
+/* Subtle Islamic geometry grid */
+.loader-bg-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 0 L48 32 L80 40 L48 48 L40 80 L32 48 L0 40 L32 32 Z' fill='none' stroke='%23D4AF37' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='10' fill='none' stroke='%23D4AF37' stroke-width='0.3'/%3E%3C/svg%3E");
+  animation: loader-grid-drift 30s linear infinite alternate;
+  pointer-events: none;
+}
+
+/* ── Corner ornaments ─────────────────────────────────────────────────────── */
+.loader-corner {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  pointer-events: none;
+}
+.loader-corner::before,
+.loader-corner::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(135deg, #d4af37, #b8912c);
+  border-radius: 2px;
+}
+.loader-corner::before { width: 2px; height: 32px; }
+.loader-corner::after  { width: 32px; height: 2px; }
+
+.loader-corner-tl { top: 28px; left: 28px; }
+.loader-corner-tl::before { top: 0; left: 0; }
+.loader-corner-tl::after  { top: 0; left: 0; }
+
+.loader-corner-tr { top: 28px; right: 28px; }
+.loader-corner-tr::before { top: 0; right: 0; }
+.loader-corner-tr::after  { top: 0; right: 0; }
+
+.loader-corner-bl { bottom: 28px; left: 28px; }
+.loader-corner-bl::before { bottom: 0; left: 0; }
+.loader-corner-bl::after  { bottom: 0; left: 0; }
+
+.loader-corner-br { bottom: 28px; right: 28px; }
+.loader-corner-br::before { bottom: 0; right: 0; }
+.loader-corner-br::after  { bottom: 0; right: 0; }
+
+/* ── Orbital rings wrapper ────────────────────────────────────────────────── */
+.loader-rings-wrapper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-orbital {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: loader-orbital-spin linear infinite;
+}
+
+.loader-orbital-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ead9a8 0%, #d4af37 60%, transparent 100%);
+  box-shadow: 0 0 4px rgba(212,175,55,0.6);
+}
+
+/* ── Center stack ─────────────────────────────────────────────────────────── */
+.loader-center {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+}
+
+/* Gold halo glow disc */
+.loader-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 40%, transparent 70%);
+  transform: translate(-50%, -55%);
+  animation: loader-halo-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Kaaba SVG wrapper */
+.loader-kaaba-wrapper {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.5rem;
+  animation: loader-kaaba-float 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 24px rgba(212,175,55,0.35));
+}
+
+.loader-kaaba-svg {
+  width: clamp(140px, 28vw, 220px);
+  height: auto;
+}
+
+/* Bismillah */
+.loader-bismillah {
+  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+  font-size: clamp(1.15rem, 3.5vw, 1.65rem);
+  font-weight: 500;
+  color: transparent;
+  background: linear-gradient(135deg, #ead9a8 0%, #d4af37 50%, #b8912c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.04em;
+  text-shadow: none;
+  filter: drop-shadow(0 0 12px rgba(212,175,55,0.4));
+}
+
+/* Company brand */
+.loader-brand {
+  font-family: 'Cinzel', 'Fraunces', Georgia, serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+  line-height: 1;
+}
+
+.loader-brand-accent { color: #d4af37; }
+.loader-brand-main   { color: #fdfbf6; }
+
+/* Sub-tagline */
+.loader-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(253,251,246,0.38);
+  margin-bottom: 2rem;
+}
+
+/* Progress bar */
+.loader-progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: clamp(240px, 50vw, 380px);
+}
+
+.loader-progress-track {
+  flex: 1;
+  height: 2px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #b8912c, #ead9a8, #d4af37);
+  border-radius: 99px;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.loader-progress-shimmer {
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+  border-radius: 99px;
+  animation: loader-progress-shimmer 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.loader-progress-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(212,175,55,0.75);
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Star field canvas ────────────────────────────────────────────────────── */
+.star-field-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.45;
+  /* Only visible on dark sections — blend with the dark backgrounds */
+  mix-blend-mode: screen;
+}
+
+/* ── Hero 3D Kaaba wrapper ────────────────────────────────────────────────── */
+.hero-3d-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 2rem;
+  overflow: hidden;
+  border: 1px solid rgba(212,175,55,0.14);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(212,175,55,0.06) 0%, transparent 65%),
+    linear-gradient(165deg, rgba(12,20,45,0.92) 0%, rgba(5,8,18,0.98) 100%);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.08) inset,
+    0 40px 80px -24px rgba(0,0,0,0.7),
+    0 0 80px -20px rgba(212,175,55,0.1);
+  transition:
+    border-color 0.5s var(--ease-luxury),
+    box-shadow 0.5s var(--ease-luxury);
+}
+
+.hero-3d-wrapper:hover {
+  border-color: rgba(212,175,55,0.28);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.15) inset,
+    0 48px 96px -28px rgba(0,0,0,0.75),
+    0 0 100px -16px rgba(212,175,55,0.18);
+}
+
+/* Depth vignette overlay */
+.hero-3d-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse 85% 85% at 50% 50%, transparent 45%, rgba(5,8,18,0.55) 100%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Gold glow ring beneath canvas */
+.hero-3d-glow-ring {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(212,175,55,0.22) 0%, transparent 70%);
+  filter: blur(16px);
+  pointer-events: none;
+  z-index: 0;
+  animation: loader-halo-pulse 4s ease-in-out infinite;
+}
+
+/* Canvas element inside fills the wrapper */
+.hero-3d-wrapper canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* Label overlay at bottom of 3D canvas */
+.hero-3d-label {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 10;
+  border-radius: 1rem;
+  border: 1px solid rgba(253,251,246,0.1);
+  background: rgba(5,8,22,0.65);
+  padding: 0.85rem 1.1rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Drag hint */
+.hero-3d-hint {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 10;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.5);
+  pointer-events: none;
+  animation: fade-in 1s ease 2s both;
+}
+
+/* Kaaba canvas wrapper inside KaabaScene component */
+.kaaba-canvas-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Fallback for environments without WebGL */
+.kaaba-canvas-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.kaaba-canvas-fallback svg {
+  width: 60%;
+  max-width: 280px;
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(212,175,55,0.3));
+  animation: loader-kaaba-float 6s ease-in-out infinite;
+}
+
+/* ── Responsive: mobile - smaller 3D canvas ───────────────────────────────── */
+@media (max-width: 639px) {
+  .hero-3d-wrapper {
+    aspect-ratio: 3 / 4;
+    max-height: 380px;
+  }
+  .loader-kaaba-svg {
+    width: 140px;
+  }
+  .loader-corner { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .hero-3d-wrapper {
+    aspect-ratio: unset;
+    min-height: 580px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ─── PHASE 2: ANIME.JS-INSPIRED 3D + HOTELS SECTION ─────────────────────────
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Animated dot grid canvas (global fixed layer) ────────────────────────── */
+.animated-grid-canvas {
+  pointer-events: none;
+  display: block;
+}
+
+.animated-grid-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  /* Only show on dark sections via blend mode */
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+/* ── SplitText character animation ───────────────────────────────────────── */
+.split-text-host {
+  display: inline;
+  perspective: 600px;
+}
+
+.split-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.split-char {
+  display: inline-block;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+
+.split-space {
+  display: inline-block;
+  width: 0.28em;
+}
+
+/* ── FloatingParticles canvas ─────────────────────────────────────────────── */
+.floating-particles-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Masjid al-Haram photo 3D tilt card ──────────────────────────────────── */
+.haram-photo-scene {
+  position: relative;
+  perspective: 1400px;
+  padding-bottom: 2.5rem;
+  padding-right: 0;
+}
+
+@media (min-width: 640px) {
+  .haram-photo-scene {
+    padding-bottom: 3rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.haram-photo-card {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+
+/* Main Masjid photo */
+.haram-photo-main {
+  position: relative;
+  border-radius: 1.75rem;
+  border: 1px solid rgba(212,175,55,0.14);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.06) inset,
+    0 40px 80px -20px rgba(0,0,0,0.65),
+    0 0 80px -16px rgba(212,175,55,0.12);
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  transition: box-shadow 0.5s var(--ease-luxury), border-color 0.5s var(--ease-luxury);
+}
+
+.haram-photo-main:hover {
+  border-color: rgba(212,175,55,0.28);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.14) inset,
+    0 48px 96px -24px rgba(0,0,0,0.75),
+    0 0 100px -16px rgba(212,175,55,0.2);
+}
+
+@media (min-width: 640px) {
+  .haram-photo-main { aspect-ratio: 5/6; }
+}
+
+@media (min-width: 1024px) {
+  .haram-photo-main {
+    aspect-ratio: unset;
+    min-height: 580px;
+  }
+}
+
+/* Floating Medina mini card */
+.haram-photo-mini-card {
+  position: absolute;
+  bottom: -0.5rem;
+  right: 0;
+  z-index: 10;
+  width: 40%;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(253,251,246,0.14);
+  box-shadow: 0 20px 48px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.12);
+}
+
+@media (min-width: 640px) {
+  .haram-photo-mini-card {
+    width: 38%;
+    bottom: -1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .haram-photo-mini-card {
+    right: -1rem;
+  }
+}
+
+/* Stats badge */
+.haram-photo-stats-badge {
+  position: absolute;
+  left: -0.25rem;
+  top: 1.5rem;
+  z-index: 10;
+  border-radius: 1rem;
+  padding: 0.875rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .haram-photo-stats-badge {
+    left: -1rem;
+    top: 1.5rem;
+  }
+}
+
+/* Ground glow */
+.haram-photo-glow {
+  position: absolute;
+  bottom: -48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65%;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(212,175,55,0.18) 0%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: -1;
+  animation: loader-halo-pulse 5s ease-in-out infinite;
+}
+
+/* ── Hotels Section ───────────────────────────────────────────────────────── */
+
+/* Tab bar */
+.hotels-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hotels-tab-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(253,251,246,0.1);
+  background: rgba(253,251,246,0.04);
+  padding: 0.65rem 1.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(253,251,246,0.55);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-luxury);
+  overflow: hidden;
+}
+
+.hotels-tab-btn:hover {
+  border-color: rgba(212,175,55,0.3);
+  color: rgba(253,251,246,0.85);
+  background: rgba(212,175,55,0.06);
+}
+
+.hotels-tab-btn-active {
+  border-color: rgba(212,175,55,0.45);
+  color: #d4af37;
+  background: rgba(212,175,55,0.1);
+}
+
+.hotels-tab-active-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(212,175,55,0.14) 0%, rgba(212,175,55,0.06) 100%);
+  z-index: -1;
+}
+
+.hotels-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 9999px;
+  background: rgba(212,175,55,0.18);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #d4af37;
+  padding: 0 0.3rem;
+}
+
+/* Hotel grid */
+.hotels-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 540px) {
+  .hotels-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hotels-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hotels-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.65rem;
+  }
+}
+
+/* Hotel card */
+.hotel-card {
+  position: relative;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(253,251,246,0.08);
+  background: linear-gradient(165deg, rgba(18,31,56,0.9) 0%, rgba(10,16,38,0.95) 100%);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.04) inset,
+    0 16px 40px -12px rgba(0,0,0,0.55);
+  cursor: default;
+  transition:
+    border-color 0.4s var(--ease-luxury),
+    box-shadow 0.4s var(--ease-luxury);
+  perspective: 800px;
+}
+
+.hotel-card:hover {
+  border-color: rgba(212,175,55,0.25);
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.1) inset,
+    0 28px 56px -16px rgba(0,0,0,0.65),
+    0 0 40px -10px rgba(212,175,55,0.12);
+}
+
+/* Gold bottom border reveal on hover */
+.hotel-card-border {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.45s var(--ease-luxury);
+}
+
+.hotel-card:hover .hotel-card-border {
+  transform: scaleX(1);
+}
+
+/* Image wrapper */
+.hotel-card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.hotel-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.65s var(--ease-luxury);
+}
+
+.hotel-card:hover .hotel-card-img {
+  transform: scale(1.07);
+}
+
+/* Gradient overlay on image */
+.hotel-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 35%,
+    rgba(10,16,38,0.55) 75%,
+    rgba(10,16,38,0.88) 100%
+  );
+  transition: opacity 0.4s var(--ease-luxury);
+}
+
+.hotel-card:hover .hotel-card-overlay {
+  opacity: 0.85;
+}
+
+/* Stars badge */
+.hotel-stars-badge {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: rgba(10,16,38,0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212,175,55,0.25);
+  border-radius: 9999px;
+  padding: 0.25rem 0.55rem;
+}
+
+/* Tag badge */
+.hotel-tag-badge {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.1));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.hotel-tag-badge-bottom {
+  top: auto;
+  bottom: 0.65rem;
+  left: 0.65rem;
+}
+
+/* Info section */
+.hotel-card-info {
+  padding: 0.9rem 1rem 1rem;
+}
+
+.hotel-card-name {
+  font-family: 'Cinzel', 'Fraunces', Georgia, serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: rgba(253,251,246,0.92);
+  letter-spacing: 0.01em;
+  margin: 0 0 0.35rem;
+}
+
+.hotel-card-distance {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: rgba(253,251,246,0.45);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ── Ensure z-index stacking works with fixed grid ────────────────────────── */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+/* Light sections dim the star/grid backgrounds */
+.premium-light-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(253,251,246,0.96);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.premium-light-section > * {
+  position: relative;
+  z-index: 1;
+}

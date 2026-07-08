@@ -30,9 +30,9 @@ export default {
         ink: '#14141A',
       },
       fontFamily: {
-        heading: ['Fraunces', 'serif'],
+        heading: ['Cinzel', 'Fraunces', 'serif'],
         body: ['Inter', 'sans-serif'],
-        arabic: ['Amiri', 'serif'],
+        arabic: ['Noto Naskh Arabic', 'Amiri', 'serif'],
       },
       boxShadow: {
         'gold-glow': '0 12px 32px -8px rgba(212, 175, 55, 0.35)',
