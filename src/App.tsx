@@ -11,6 +11,7 @@ import SacredSites from './components/SacredSites'
 import TrustBar from './components/TrustBar'
 import WhatsAppButton from './components/WhatsAppButton'
 import WhyChooseUs from './components/WhyChooseUs'
+import SmoothScroll from './components/SmoothScroll'
 
 const Testimonials = lazy(() => import('./components/Testimonials'))
 const Gallery = lazy(() => import('./components/Gallery'))
@@ -21,7 +22,7 @@ function SectionFallback() {
 
 export default function App() {
   return (
-    <>
+    <SmoothScroll>
       <Navbar />
       <main>
         <Hero />
@@ -42,6 +43,6 @@ export default function App() {
       </main>
       <Footer />
       <WhatsAppButton />
-    </>
+    </SmoothScroll>
   )
 }
