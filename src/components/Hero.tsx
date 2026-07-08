@@ -61,7 +61,7 @@ function HaramPhotoCard() {
           <FloatingParticles className="absolute inset-0 z-20 pointer-events-none" count={40} />
 
           {/* Photo label */}
-          <div className="absolute bottom-5 left-5 right-5 z-30 rounded-2xl border border-sand-50/10 bg-night-900/55 p-4 backdrop-blur-2xl sm:bottom-6 sm:left-6 sm:right-6 sm:p-5"
+          <div className="absolute bottom-5 left-5 z-30 w-[58%] rounded-2xl border border-sand-50/10 bg-night-900/65 p-4 backdrop-blur-2xl sm:bottom-6 sm:left-6 sm:w-1/2 sm:p-5"
             style={{ transform: 'translateZ(20px)' }}
           >
             <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gold-400">

@@ -21,7 +21,7 @@ export const siteConfig = {
   },
 
   mapEmbedUrl:
-    'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3710.123456789!2d39.1728!3d21.5433!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDMyJzM1LjkiTiAzOcKwMTAnMjIuMSJF!5e0!3m2!1sen!2ssa!4v1600000000000',
+    'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d29729.07008139702!2d39.1481541246736!3d21.541434313204936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c3d0f0eb210c49%3A0xa1969d72dc91a780!2sAl%20Andalus%2C%20Jeddah%20Saudi%20Arabia!5e0!3m2!1sen!2sus!4v1717621000000!5m2!1sen!2sus',
 
   navLinks: [
     { label: 'Home', href: '#home' },
